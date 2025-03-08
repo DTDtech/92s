@@ -183,10 +183,7 @@
     <script src="../../script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const initialEquipmentItem = document.querySelector('.equipment-item');
-            if (initialEquipmentItem) {
-                setupEquipmentItem(initialEquipmentItem);
-            }
+            document.querySelectorAll('.equipment-item').forEach(setupEquipmentItem);
 
             const customerSearch = document.getElementById('customer_search');
             if (customerSearch) {
@@ -273,18 +270,17 @@
 
                 // Apply discount
                 price = price - (price * (discount / 100));
-                console.log('Calculated Price:', price); // Debugging: Log the calculated price
 
                 calculatedPriceSpan.textContent = price.toFixed(2);
             };
 
-            // Attach event listeners
+            // Attach event listeners for real-time price calculation
             equipmentSelect.addEventListener('change', calculatePrice);
             rentalPeriodSelect.addEventListener('change', calculatePrice);
             quantityInput.addEventListener('input', calculatePrice);
             discountInput.addEventListener('input', calculatePrice);
 
-            // Trigger initial calculation
+            // Trigger calculation in case default values are set
             calculatePrice();
         }
 
@@ -300,7 +296,14 @@
             // Generate the HTML for the new equipment item
             let options = '<option value="" disabled selected>Chọn thiết bị</option>';
             equipments.forEach(equipment => {
-                options += `<option value="${equipment.id}" data-hourly="${equipment.hourly_price}" data-daily="${equipment.daily_price}" data-weekly="${equipment.weekly_price}" data-monthly="${equipment.monthly_price}">${equipment.name}</option>`;
+                console.log('equipment:', JSON.stringify(equipment));
+                options += `<option value="${equipment.id}" 
+                        data-hourly="${equipment.hourly_price}" 
+                        data-daily="${equipment.daily_price}" 
+                        data-weekly="${equipment.weekly_price}" 
+                        data-monthly="${equipment.monthly_price}">
+                        ${equipment.name}
+                    </option>`;
             });
 
             newItem.innerHTML = `
@@ -320,7 +323,7 @@
                 <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="removeEquipment(this)">Xóa</button>
             `;
 
-            // Add event listeners for dynamic price calculation
+            // Setup event listeners for price calculation
             setupEquipmentItem(newItem);
 
             equipmentList.appendChild(newItem);

@@ -1,7 +1,7 @@
 <?php
 include "../config.php";
 
-$sql = "SELECT id, name FROM equipments";
+$sql = "SELECT * FROM equipments";
 $result = mysqli_query($conn, $sql);
 
 $equipments = [];
