@@ -15,9 +15,10 @@
         <div class="sidebar bg-dark text-white p-4 vh-100">
             <h2 class="text-center">92S Rental</h2>
             <a href="index.php" class="d-block text-white py-2 active"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="equipments.php" class="d-block text-white py-2"><i class="fas fa-tools"></i> Thiết bị</a>
-            <a href="orders.php" class="d-block text-white py-2"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
-            <a href="customers.php" class="d-block text-white py-2 active"><i class="fas fa-user"></i> Khách hàng</a>
+            <a href="models/equipments/index.php" class="d-block text-white py-2"><i class="fas fa-tools"></i> Thiết bị</a>
+            <a href="models/orders/index.php" class="d-block text-white py-2"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
+            <a href="models/customers/index.php" class="d-block text-white py-2"><i class="fas fa-user"></i> Khách hàng</a>
+            <a href="models/calendar/index.php" class="d-block text-white py-2"><i class="fas fa-user"></i> Lịch</a>
         </div>
         <div class="container mt-4">
             <h1 class="mb-4">Dashboard</h1>

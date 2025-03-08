@@ -13,10 +13,11 @@
     <div class="d-flex">
         <div class="sidebar bg-dark text-white p-4 vh-100">
             <h2 class="text-center">92S Rental</h2>
-            <a href="index.php" class="d-block text-white py-2"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="equipments.php" class="d-block text-white py-2"><i class="fas fa-tools"></i> Thiết bị</a>
-            <a href="orders.php" class="d-block text-white py-2"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
-            <a href="customers.php" class="d-block text-white py-2 active"><i class="fas fa-user"></i> Khách hàng</a>
+            <a href="../../index.php" class="d-block text-white py-2"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="../equipments/index.php" class="d-block text-white py-2"><i class="fas fa-tools"></i> Thiết bị</a>
+            <a href="../orders/index.php" class="d-block text-white py-2"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
+            <a href="#" class="d-block text-white py-2 active"><i class="fas fa-user"></i> Khách hàng</a>
+            <a href="../calendar/index.php" class="d-block text-white py-2 active"><i class="fas fa-calendar"></i> Lịch đặt</a>
         </div>
         <div class="container mt-4">
             <h1 class="mb-3">Quản lý khách hàng</h1>
@@ -33,7 +34,7 @@
                             <form onsubmit="addCustomer(event)">
                                 <div class="mb-2"><input type="text" id="cust_name" class="form-control" placeholder="Tên khách hàng" required></div>
                                 <div class="mb-2"><input type="text" id="address" class="form-control" placeholder="Địa chỉ"></div>
-                                <div class="mb-2"><input type="text" id="contact" class="form-control" placeholder="Liên hệ" required></div>
+                                <div class="mb-2"><input type="text" id="contact" class="form-control" placeholder="Số điện thoại"></div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-success">Lưu</button>
                                     <button type="button" class="btn btn-secondary" onclick="hideCustomerForm()">Hủy</button>
@@ -55,7 +56,7 @@
                 </thead>
                 <tbody>
                     <?php
-                    include "config.php";
+                    include "../config.php";
                     $sql = "SELECT * FROM customers";
                     $result = mysqli_query($conn, $sql);
                     while ($row = mysqli_fetch_assoc($result)) {
@@ -74,7 +75,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="../../script.js"></script>
 </body>
 
 </html>
