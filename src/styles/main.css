@@ -32,3 +32,28 @@ body {
 .nav-link.active {
   background: #007bff;
 }
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+}
+
+.content-area {
+  margin-left: 250px;
+  padding: 20px;
+  width: calc(100% - 250px);
+}
+
+.nav-link {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link svg {
+  margin-right: 10px;
+}
