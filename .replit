@@ -6,3 +6,15 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "npm start"]
 build = ["sh", "-c", "npm run build"]
+
+[workflows]
+runButton = "Run Dev"
+
+[[workflows.workflow]]
+name = "Run Dev"
+author = 40550043
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
