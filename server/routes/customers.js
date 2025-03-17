@@ -8,6 +8,9 @@ router.get('/', customerController.getAllCustomers);
 // Create new customer
 router.post('/', customerController.createCustomer);
 
+// Update customer
+router.put('/:id', customerController.updateCustomer);
+
 // Delete customer
 router.delete('/:id', customerController.deleteCustomer);
 

@@ -67,6 +67,10 @@ function EquipmentsPage(): React.ReactElement {
     }
   };
 
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('vi-VN').format(price);
+  };
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
@@ -113,10 +117,10 @@ function EquipmentsPage(): React.ReactElement {
                       <TableCell>{equipment.name}</TableCell>
                       <TableCell>{equipment.description}</TableCell>
                       <TableCell>{equipment.quantity}</TableCell>
-                      <TableCell>{equipment.hourly_price}</TableCell>
-                      <TableCell>{equipment.daily_price}</TableCell>
-                      <TableCell>{equipment.weekly_price}</TableCell>
-                      <TableCell>{equipment.monthly_price}</TableCell>
+                      <TableCell>{formatPrice(equipment.hourly_price)}</TableCell>
+                      <TableCell>{formatPrice(equipment.daily_price)}</TableCell>
+                      <TableCell>{formatPrice(equipment.weekly_price)}</TableCell>
+                      <TableCell>{formatPrice(equipment.monthly_price)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
                           <Button 

@@ -3,32 +3,65 @@ const db = require('../config/db');
 exports.getAllOrders = async (req, res) => {
   try {
     const [rows] = await db.query(`
-      SELECT 
+      SELECT
         o.id AS order_id,
         c.name AS customer,
-        GROUP_CONCAT(CONCAT(e.name, ' (', oe.quantity, ' x ', oe.rental_price, ')') SEPARATOR ', ') AS equipment_details,
-        SUM(oe.quantity * oe.rental_price) AS total_price,
         o.rental_start,
-        o.rental_end
-      FROM 
-        orders o 
-      JOIN 
-        customers c ON o.customer_id = c.id 
-      JOIN 
-        order_equipments oe ON o.id = oe.order_id 
-      JOIN 
+        o.rental_end,
+        e.name AS equipment_name,
+        oe.quantity,
+        oe.rental_price,
+        (oe.quantity * oe.rental_price) AS item_total
+      FROM
+        orders o
+      JOIN
+        customers c ON o.customer_id = c.id
+      JOIN
+        order_equipments oe ON o.id = oe.order_id
+      JOIN
         equipments e ON oe.equipment_id = e.id
-      GROUP BY 
-        o.id
+      ORDER BY
+        o.id, e.name
     `);
+
+    // Group the results by order
+    const ordersMap = new Map();
     
-    res.json(rows);
+    rows.forEach(row => {
+      if (!ordersMap.has(row.order_id)) {
+        ordersMap.set(row.order_id, {
+          order_id: row.order_id,
+          customer: row.customer,
+          rental_start: row.rental_start,
+          rental_end: row.rental_end,
+          equipment_items: [],
+          total_price: 0
+        });
+      }
+      
+      const order = ordersMap.get(row.order_id);
+      
+      // Add equipment item
+      order.equipment_items.push({
+        name: row.equipment_name,
+        quantity: row.quantity,
+        rental_price: row.rental_price,
+        item_total: row.item_total
+      });
+      
+      // Update total price
+      order.total_price += row.item_total;
+    });
+    
+    // Convert map to array
+    const orders = Array.from(ordersMap.values());
+    
+    res.json(orders);
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 };
-
 exports.getOrderEvents = async (req, res) => {
   try {
     const [rows] = await db.query(`
@@ -91,24 +124,6 @@ exports.createOrder = async (req, res) => {
     
     // Add equipment to order
     for (const item of equipment) {
-      // Calculate the rental price based on the rental period
-      let rentalPrice = 0;
-      
-      if (item.rental_period === 'hourly' && item.calculated_price) {
-        rentalPrice = item.calculated_price;
-      } else if (item.rental_period === 'daily' && item.calculated_price) {
-        rentalPrice = item.calculated_price;
-      } else if (item.rental_period === 'weekly' && item.calculated_price) {
-        rentalPrice = item.calculated_price;
-      } else if (item.rental_period === 'monthly' && item.calculated_price) {
-        rentalPrice = item.calculated_price;
-      }
-      
-      // Apply discount if provided
-      if (item.discount && item.discount > 0) {
-        rentalPrice = rentalPrice * (1 - (item.discount / 100));
-      }
-      
       await connection.query(
         `INSERT INTO order_equipments 
          (order_id, equipment_id, quantity, rental_price) 
@@ -117,7 +132,7 @@ exports.createOrder = async (req, res) => {
           orderId, 
           item.equipment_id, 
           item.quantity, 
-          rentalPrice
+          item.calculated_price
         ]
       );
     }

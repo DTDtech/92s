@@ -23,11 +23,11 @@ interface EquipmentFormProps {
   equipment: Equipment | null;
 }
 
-function EquipmentForm({ 
-  open, 
-  onOpenChange, 
-  onEquipmentSaved, 
-  equipment 
+function EquipmentForm({
+  open,
+  onOpenChange,
+  onEquipmentSaved,
+  equipment
 }: EquipmentFormProps): React.ReactElement {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -64,7 +64,7 @@ function EquipmentForm({
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    
+
     // Validation
     if (!name) {
       toast.error("Please enter equipment name", {
@@ -72,7 +72,7 @@ function EquipmentForm({
       });
       return;
     }
-    
+
     const formData = {
       name,
       description,
@@ -82,7 +82,7 @@ function EquipmentForm({
       weekly_price: weeklyPrice,
       monthly_price: monthlyPrice
     };
-    
+
     try {
       setLoading(true);
       if (equipment) {
@@ -107,12 +107,12 @@ function EquipmentForm({
         <DialogHeader>
           <DialogTitle>{equipment ? 'Edit Equipment' : 'Add New Equipment'}</DialogTitle>
           <DialogDescription>
-            {equipment 
-              ? 'Update the equipment details below.' 
+            {equipment
+              ? 'Update the equipment details below.'
               : 'Enter the details for the new equipment.'}
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
@@ -124,7 +124,7 @@ function EquipmentForm({
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -135,7 +135,7 @@ function EquipmentForm({
               rows={3}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="quantity">Quantity *</Label>
             <Input
@@ -147,61 +147,73 @@ function EquipmentForm({
               required
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="hourlyPrice">Hourly Price *</Label>
+              <Label htmlFor="hourlyPrice">Hourly Price</Label>
               <Input
                 id="hourlyPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                value={hourlyPrice}
-                onChange={(e) => setHourlyPrice(Number(e.target.value))}
+                type="text"
+                value={hourlyPrice === 0 && document.activeElement?.id === "hourlyPrice" ? '' : hourlyPrice}
+                onChange={(e) => setHourlyPrice(e.target.value === '' ? 0 : Number(e.target.value))}
+                onFocus={(e) => {
+                  if (hourlyPrice === 0) {
+                    e.target.value = '';
+                  }
+                }}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="dailyPrice">Daily Price *</Label>
+              <Label htmlFor="dailyPrice">Daily Price</Label>
               <Input
                 id="dailyPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                value={dailyPrice}
-                onChange={(e) => setDailyPrice(Number(e.target.value))}
+                type="text"
+                value={dailyPrice === 0 && document.activeElement?.id === "dailyPrice" ? '' : dailyPrice}
+                onChange={(e) => setDailyPrice(e.target.value === '' ? 0 : Number(e.target.value))}
+                onFocus={(e) => {
+                  if (dailyPrice === 0) {
+                    e.target.value = '';
+                  }
+                }}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="weeklyPrice">Weekly Price *</Label>
+              <Label htmlFor="weeklyPrice">Weekly Price</Label>
               <Input
                 id="weeklyPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                value={weeklyPrice}
-                onChange={(e) => setWeeklyPrice(Number(e.target.value))}
+                type="text"
+                value={weeklyPrice === 0 && document.activeElement?.id === "weeklyPrice" ? '' : weeklyPrice}
+                onChange={(e) => setWeeklyPrice(e.target.value === '' ? 0 : Number(e.target.value))}
+                onFocus={(e) => {
+                  if (weeklyPrice === 0) {
+                    e.target.value = '';
+                  }
+                }}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="monthlyPrice">Monthly Price *</Label>
+              <Label htmlFor="monthlyPrice">Monthly Price</Label>
               <Input
                 id="monthlyPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                value={monthlyPrice}
-                onChange={(e) => setMonthlyPrice(Number(e.target.value))}
+                type="text"
+                value={monthlyPrice === 0 && document.activeElement?.id === "monthlyPrice" ? '' : monthlyPrice}
+                onChange={(e) => setMonthlyPrice(e.target.value === '' ? 0 : Number(e.target.value))}
+                onFocus={(e) => {
+                  if (monthlyPrice === 0) {
+                    e.target.value = '';
+                  }
+                }}
                 required
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

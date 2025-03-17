@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Customer } from '../types';
-
 
 interface CustomerFormProps {
   open: boolean;
@@ -23,67 +14,50 @@ interface CustomerFormProps {
   customer: Customer | null;
 }
 
-function CustomerForm({ 
-  open, 
-  onOpenChange, 
-  onCustomerSaved, 
-  customer 
-}: CustomerFormProps): React.ReactElement {
-  const [name, setName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+export function CustomerForm({ open, onOpenChange, onCustomerSaved, customer }: CustomerFormProps) {
+  const [formData, setFormData] = useState<Omit<Customer, 'id'>>({
+    name: '',
+    address: '',
+    phone_number: ''
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (customer) {
-      setName(customer.name);
-      setPhone(customer.phone || '');
-      setEmail(customer.email || '');
-      setAddress(customer.address || '');
+      setFormData({
+        name: customer.name || '',
+        address: customer.address || '',
+        phone_number: customer.phone_number || ''
+      });
     } else {
-      resetForm();
+      setFormData({
+        name: '',
+        address: '',
+        phone_number: ''
+      });
     }
   }, [customer, open]);
 
-  const resetForm = (): void => {
-    setName('');
-    setPhone('');
-    setEmail('');
-    setAddress('');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
-    if (!name) {
-      toast.error("Please enter customer name", {
-        description: "Customer name is required."
-      });
-      return;
-    }
-    
-    const formData = {
-      name,
-      phone,
-      email,
-      address
-    };
-    
+    setLoading(true);
+
     try {
-      setLoading(true);
       if (customer) {
+        // Update existing customer
         await axios.put(`${process.env.API_HOST}/api/customers/${customer.id}`, formData);
       } else {
+        // Create new customer
         await axios.post(`${process.env.API_HOST}/api/customers`, formData);
       }
       onCustomerSaved();
     } catch (error) {
       console.error('Error saving customer:', error);
-      toast.error("Failed to save customer", {
-        description: "There was a problem saving the customer."
-      });
     } finally {
       setLoading(false);
     }
@@ -94,63 +68,53 @@ function CustomerForm({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{customer ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
-          <DialogDescription>
-            {customer 
-              ? 'Update the customer details below.' 
-              : 'Enter the details for the new customer.'}
-          </DialogDescription>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter customer name"
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name *
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="col-span-3"
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone_number" className="text-right">
+                Phone Number
+              </Label>
+              <Input
+                id="phone_number"
+                name="phone_number"
+                value={formData.phone_number || ''}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="address" className="text-right">
+                Address
+              </Label>
+              <Textarea
+                id="address"
+                name="address"
+                value={formData.address || ''}
+                onChange={handleChange}
+                className="col-span-3"
+                rows={3}
+              />
+            </div>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter phone number"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email address"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Textarea
-              id="address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter address"
-              rows={3}
-            />
-          </div>
-          
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : (customer ? 'Update' : 'Save')}
+              {loading ? 'Saving...' : 'Save Customer'}
             </Button>
           </DialogFooter>
         </form>
@@ -158,5 +122,3 @@ function CustomerForm({
     </Dialog>
   );
 }
-
-export default CustomerForm;

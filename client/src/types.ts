@@ -2,9 +2,8 @@
 export interface Customer {
   id: number;
   name: string;
-  phone?: string;
-  email?: string;
   address?: string;
+  phone_number?: string;
 }
 
 // Equipment types

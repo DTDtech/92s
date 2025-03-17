@@ -55,7 +55,7 @@ function Navbar(): React.ReactElement {
                 <Users className="inline-block mr-1 h-4 w-4" />
                 Khách hàng
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/calendar"
                 className={({ isActive }) => 
                   `px-3 py-2 rounded-md text-sm font-medium ${
@@ -67,7 +67,7 @@ function Navbar(): React.ReactElement {
               >
                 <Calendar className="inline-block mr-1 h-4 w-4" />
                 Lịch
-              </NavLink>
+              </NavLink> */}
             </div>
           </div>
         </div>

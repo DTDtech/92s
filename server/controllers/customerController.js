@@ -11,7 +11,7 @@ exports.getAllCustomers = async (req, res) => {
 };
 
 exports.createCustomer = async (req, res) => {
-  const { name, phone, email, address } = req.body;
+  const { name, address, phone_number } = req.body;
   
   if (!name) {
     return res.status(400).json({ error: 'Customer name is required' });
@@ -19,8 +19,8 @@ exports.createCustomer = async (req, res) => {
   
   try {
     const [result] = await db.query(
-      'INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)',
-      [name, phone || null, email || null, address || null]
+      'INSERT INTO customers (name, address, phone_number) VALUES (?, ?, ?)',
+      [name, address || null, phone_number || null]
     );
     
     res.status(201).json({ 
@@ -30,14 +30,47 @@ exports.createCustomer = async (req, res) => {
       customer: {
         id: result.insertId,
         name,
-        phone,
-        email,
-        address
+        address,
+        phone_number
       }
     });
   } catch (error) {
     console.error('Error creating customer:', error);
     res.status(500).json({ error: 'Failed to create customer' });
+  }
+};
+
+exports.updateCustomer = async (req, res) => {
+  const { id } = req.params;
+  const { name, address, phone_number } = req.body;
+  
+  if (!name) {
+    return res.status(400).json({ error: 'Customer name is required' });
+  }
+  
+  try {
+    const [result] = await db.query(
+      'UPDATE customers SET name = ?, address = ?, phone_number = ? WHERE id = ?',
+      [name, address || null, phone_number || null, id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Customer updated successfully',
+      customer: {
+        id: parseInt(id),
+        name,
+        address,
+        phone_number
+      }
+    });
+  } catch (error) {
+    console.error('Error updating customer:', error);
+    res.status(500).json({ error: 'Failed to update customer' });
   }
 };
 
