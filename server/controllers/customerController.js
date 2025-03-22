@@ -1,9 +1,9 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 exports.getAllCustomers = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM customers ORDER BY name');
-    res.json(rows);
+    const result = await pool.query('SELECT * FROM customers ORDER BY name');
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching customers:', error);
     res.status(500).json({ error: 'Failed to fetch customers' });
@@ -18,17 +18,17 @@ exports.createCustomer = async (req, res) => {
   }
   
   try {
-    const [result] = await db.query(
-      'INSERT INTO customers (name, address, phone_number) VALUES (?, ?, ?)',
+    const result = await pool.query(
+      'INSERT INTO customers (name, address, phone_number) VALUES ($1, $2, $3) RETURNING id',
       [name, address || null, phone_number || null]
     );
     
     res.status(201).json({ 
       success: true, 
       message: 'Customer added successfully', 
-      customerId: result.insertId,
+      customerId: result.rows[0].id,
       customer: {
-        id: result.insertId,
+        id: result.rows[0].id,
         name,
         address,
         phone_number
@@ -49,24 +49,19 @@ exports.updateCustomer = async (req, res) => {
   }
   
   try {
-    const [result] = await db.query(
-      'UPDATE customers SET name = ?, address = ?, phone_number = ? WHERE id = ?',
+    const result = await pool.query(
+      'UPDATE customers SET name = $1, address = $2, phone_number = $3 WHERE id = $4 RETURNING *',
       [name, address || null, phone_number || null, id]
     );
     
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
     
     res.json({ 
       success: true, 
       message: 'Customer updated successfully',
-      customer: {
-        id: parseInt(id),
-        name,
-        address,
-        phone_number
-      }
+      customer: result.rows[0]
     });
   } catch (error) {
     console.error('Error updating customer:', error);
@@ -79,17 +74,17 @@ exports.deleteCustomer = async (req, res) => {
   
   try {
     // Check if customer has any orders
-    const [orders] = await db.query('SELECT COUNT(*) as count FROM orders WHERE customer_id = ?', [id]);
+    const result = await pool.query('SELECT COUNT(*) FROM orders WHERE customer_id = $1', [id]);
     
-    if (orders[0].count > 0) {
+    if (parseInt(result.rows[0].count) > 0) {
       return res.status(400).json({ 
         error: 'Cannot delete customer with existing orders. Delete the orders first.' 
       });
     }
     
-    const [result] = await db.query('DELETE FROM customers WHERE id = ?', [id]);
+    const deleteResult = await pool.query('DELETE FROM customers WHERE id = $1', [id]);
     
-    if (result.affectedRows === 0) {
+    if (deleteResult.rowCount === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
     

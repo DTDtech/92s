@@ -19,13 +19,21 @@ export interface Equipment {
 }
 
 // Order types
+// Define types for the response
+export interface OrderItem {
+  name: string;
+  quantity: number;
+  rental_price: number;
+  item_total: number;
+}
+
 export interface Order {
   order_id: number;
   customer: string;
-  equipment_details: string;
+  equipment_items: OrderItem[];
+  total_price: number;
   rental_start: string;
   rental_end: string;
-  total_price: number;
 }
 
 export interface OrderEquipment {
@@ -41,6 +49,33 @@ export interface OrderFormData {
   rental_start: string;
   rental_end: string;
   equipment: OrderEquipment[];
+}
+
+export interface Handover {
+  handover_id: number;
+  handover_date: string;
+  status: string;
+  customer_document_image: string;
+  equipment_images: string[];
+  personal_document_note: string;
+  document_note: string;
+  equipment_items: HandoverEquipment[];
+}
+
+export interface HandoverFormData {
+  handover_date: string;
+  status: string;
+  customer_document_image: File;
+  equipment_images: File[];
+  personal_document_note: string;
+  document_note: string;
+  equipment: HandoverEquipment[];
+}
+
+export interface HandoverEquipment {
+  equipment_id: string;
+  quantity: number;
+  condition: string;
 }
 
 // Calendar types

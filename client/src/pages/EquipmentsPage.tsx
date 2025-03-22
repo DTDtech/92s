@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -38,8 +38,8 @@ function EquipmentsPage(): React.ReactElement {
     setOpenEquipmentForm(false);
     setEditingEquipment(null);
     fetchEquipments();
-    toast.success("Equipment saved successfully", {
-      description: "Your equipment has been saved."
+    toast.success("Equipment created successfully", {
+      description: "Your equipment has been created."
     });
   };
 
@@ -89,7 +89,9 @@ function EquipmentsPage(): React.ReactElement {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="text-center py-4">Loading...</div>
+            <div className="flex justify-center py-6">
+              <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -123,16 +125,16 @@ function EquipmentsPage(): React.ReactElement {
                       <TableCell>{formatPrice(equipment.monthly_price)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleEditEquipment(equipment)}
                           >
                             Sửa
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
+                          <Button
+                            variant="destructive"
+                            size="sm"
                             onClick={() => handleDeleteEquipment(equipment.id)}
                           >
                             Xóa
@@ -148,9 +150,9 @@ function EquipmentsPage(): React.ReactElement {
         </CardContent>
       </Card>
 
-      <EquipmentForm 
-        open={openEquipmentForm} 
-        onOpenChange={setOpenEquipmentForm} 
+      <EquipmentForm
+        open={openEquipmentForm}
+        onOpenChange={setOpenEquipmentForm}
         onEquipmentSaved={handleEquipmentSaved}
         equipment={editingEquipment}
       />

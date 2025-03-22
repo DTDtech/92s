@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 import { Button } from '../components/ui/button';
 import { CustomerForm } from '../components/CustomerForm';
 import { Customer } from '../types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Loader2 } from 'lucide-react';
 
 function CustomersPage(): React.ReactElement {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -23,10 +25,8 @@ function CustomersPage(): React.ReactElement {
       setCustomers(response.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
-      toast({
-        title: "Failed to load customers",
+      toast.error("Failed to load customers", {
         description: "There was a problem fetching the customer data.",
-        variant: "destructive"
       });
     } finally {
       setLoading(false);
@@ -37,10 +37,8 @@ function CustomersPage(): React.ReactElement {
     setOpenCustomerForm(false);
     setEditingCustomer(null);
     fetchCustomers();
-    toast({
-      title: "Customer saved successfully",
+    toast.success("Customer saved successfully", {
       description: "Your customer has been saved.",
-      variant: "default"
     });
   };
 
@@ -55,19 +53,15 @@ function CustomersPage(): React.ReactElement {
     }
 
     try {
-      await axios.delete(`${process.env.API_HOST}/api/customers/${customerId}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/customers/${customerId}`);
       fetchCustomers();
-      toast({
-        title: "Customer deleted successfully",
+      toast.success("Customer deleted successfully", {
         description: "The customer has been removed.",
-        variant: "default"
       });
     } catch (error) {
       console.error('Error deleting customer:', error);
-      toast({
-        title: "Failed to delete customer",
+      toast.error("Failed to delete customer", {
         description: "There was a problem deleting the customer.",
-        variant: "destructive"
       });
     }
   };
@@ -79,56 +73,63 @@ function CustomersPage(): React.ReactElement {
         <Button onClick={() => setOpenCustomerForm(true)}>Add Customer</Button>
       </div>
 
-      {loading ? (
-        <div className="text-center py-10">Loading customers...</div>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead>Address</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {customers.length === 0 ? (
+      <Card>
+        <CardHeader>
+          <CardTitle>Danh sách khách hàng</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-4">
-                    No customers found. Add your first customer to get started.
-                  </TableCell>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Phone Number</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ) : (
-                customers.map((customer) => (
-                  <TableRow key={customer.id}>
-                    <TableCell className="font-medium">{customer.name}</TableCell>
-                    <TableCell>{customer.phone_number || '-'}</TableCell>
-                    <TableCell className="max-w-xs truncate">{customer.address || '-'}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mr-2"
-                        onClick={() => handleEditCustomer(customer)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteCustomer(customer.id)}
-                      >
-                        Delete
-                      </Button>
+              </TableHeader>
+              <TableBody>
+                {customers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-4">
+                      No customers found. Add your first customer to get started.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  customers.map((customer) => (
+                    <TableRow key={customer.id}>
+                      <TableCell className="font-medium">{customer.name}</TableCell>
+                      <TableCell>{customer.phone_number || '-'}</TableCell>
+                      <TableCell className="max-w-xs truncate">{customer.address || '-'}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mr-2"
+                          onClick={() => handleEditCustomer(customer)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteCustomer(customer.id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
       <CustomerForm
         open={openCustomerForm}

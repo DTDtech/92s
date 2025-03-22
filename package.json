@@ -1,29 +1,13 @@
 {
-  "name": "92s-rental",
+  "name": "92s-rental-root",
   "version": "1.0.0",
-  "description": "Rental management system for 92S Rental",
-  "main": "server/server.js",
+  "private": true,
   "scripts": {
-    "start": "node server/server.js",
-    "server": "nodemon server/server.js",
+    "server": "cd server && pnpm run server",
     "client": "cd client && pnpm dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install-client": "cd client && npm install",
-    "build-client": "cd client && npm run build",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
-    "clean": "rm -rf node_modules && cd client && rm -rf node_modules"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.18.2",
-    "mysql2": "^3.2.0"
+    "dev": "concurrently \"pnpm run server\" \"pnpm run client\""
   },
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "nodemon": "^2.0.22"
-  },
-  "engines": {
-    "node": ">=14.0.0"
+    "concurrently": "^7.6.0"
   }
 }
